@@ -32,10 +32,11 @@ sub command {
     if ( @re > 1 ) {
         # Since we're all going the same direction, we can just sort the list
         # of unique destinations
-        my @sorted = is_up $re[0]
-                    ? ( sort { $a <=> $b } uniq map { values %$_ } @re )
-                    : ( reverse sort { $a <=> $b } uniq map { values %$_ } @re )
-                    ;
+        my @sorted = sort { $a <=> $b } uniq map { values %$_ } @re;
+        unless ( is_up $re[0] ) {
+            # We're going down
+            @sorted = reverse @sorted;
+        }
         # If we have to travel to floors 1, 3, 4, 7, we need to have commands
         # for 1 -> 3, 3 -> 4, 4 -> 7
         @re = map {; { from => $sorted[$_], to => $sorted[$_+1] } }
